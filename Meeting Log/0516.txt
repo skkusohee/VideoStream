@@ -1,0 +1,21 @@
+🖍5/16 Meeting
+
+🎈Submission : Video Speed Controller Service using NS
+
+💻Team Develop
+📍Goal : Complete Development by May 22
+
+🎞Video Streaming
+📍Goal : Complete Streaming by May 19
+강승목
+최재익
+
+⏰Speed Controller
+📍Goal : Complete Controller by May 22
+윤소희
+이현정
+
+💡References
+Video streaming code : https://github.com/guoxiliu/VideoStream-NS3
+
+📅05/19 Mon 20:00 : Team Develop Meeting
