@@ -103,6 +103,8 @@ private:
   uint32_t m_lastBufferSize;      //!< Last size of the buffer
   uint32_t m_currentBufferSize;   //!< Size of the frame buffer
 
+  uint32_t m_videotime;
+
   EventId m_bufferEvent;          //!< Event to read from the buffer
   EventId m_sendEvent;            //!< Event to send data to the server
 
