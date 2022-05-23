@@ -67,8 +67,8 @@ main (int argc, char *argv[])
     clientApp.Stop (Seconds (100.0));
 
     VideoStreamServerHelper videoServer (5000);
-    videoServer.SetAttribute ("MaxPacketSize", UintegerValue (1400));
-    videoServer.SetAttribute ("FrameFile", StringValue ("./scratch/videoStreamer/frameList.txt"));
+    //videoServer.SetAttribute ("MaxPacketSize", UintegerValue (1400));
+    //videoServer.SetAttribute ("FrameFile", StringValue ("./scratch/videoStreamer/frameList.txt"));
     // videoServer.SetAttribute ("FrameSize", UintegerValue (4096));
 
     ApplicationContainer serverApp = videoServer.Install (nodes.Get (0));

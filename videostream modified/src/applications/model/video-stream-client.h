@@ -94,6 +94,7 @@ private:
   uint16_t m_rebufferCounter;     //!< Counter of the rebuffering event
 
   uint32_t m_resolution;          //!< The quality of the video from the server
+  uint32_t m_videoLevel;          //!!!
 
   uint32_t m_frameRate;           //!< Number of frames per second to be played
   uint32_t m_videoSpeed;          // 배속을 여기에 넣으세용
@@ -102,11 +103,13 @@ private:
   uint32_t m_lastRecvFrame;       //!< Last received frame number
   uint32_t m_lastBufferSize;      //!< Last size of the buffer
   uint32_t m_currentBufferSize;   //!< Size of the frame buffer
+  uint32_t m_playTime;
 
   EventId m_bufferEvent;          //!< Event to read from the buffer
   EventId m_sendEvent;            //!< Event to send data to the server
 
   bool m_FramePacketCounter[TOTAL_VIDEO_FRAME][RESOLUTION/MAX_PACKET_SIZE + 1];
+  uint32_t m_resolutionArray[5]; //!!!
 };
 
 } // namespace ns3

@@ -46,17 +46,26 @@ namespace ns3
     m_lastBufferSize = 0;
     m_currentBufferSize = 0;
     m_frameSize = 0;
-    m_resolution = 76800; // 글로벌 변수 RESOLUTION과 같은값 넣어주세요
+    //m_resolution = 76800; // 글로벌 변수 RESOLUTION과 같은값 넣어주세요
     m_frameRate = 1;
     m_videoSpeed = 1;     // 이거 골라서 넣으세용 디폴트 1배속
     m_stopCounter = 0;
     m_lastRecvFrame = 0;
     m_rebufferCounter = 0;
+    m_playTime = 0;
     m_bufferEvent = EventId();
     m_sendEvent = EventId();
+    //!!!
+    m_resolutionArray[0] = 76800;
+    m_resolutionArray[1] = 230400;
+    m_resolutionArray[2] = 409920;
+    m_resolutionArray[3] = 921600;
+    m_resolutionArray[4] = 2073600;
+    m_videoLevel = 1;
+    m_resolution = m_resolutionArray[m_videoLevel];
     for (size_t i = 0; i < TOTAL_VIDEO_FRAME; i++)
     {
-      for (size_t j = 0; j < RESOLUTION/MAX_PACKET_SIZE + 1; j++)
+      for (size_t j = 0; j < m_resolution/MAX_PACKET_SIZE + 1; j++)
       {
         m_FramePacketCounter[i][j] = false;
       }
@@ -201,7 +210,7 @@ namespace ns3
     // 하지만 새로 짠 코드에서는 TOTAL_VIDEO_FRAME으로 영상의 총 길이를 저장하고 있기 때문에
     // 이를통해 영상이 끝났는지를 판별할 수 있어서 3초동안 정지면 영상끝 부분 제거하였고
     // 버퍼링 측정 코드는 사용하시려면 추가 하셔야 할 수 있습니다.
-    
+
     // 소비할 수 없는만큼 버퍼에 영상의 프레임이 남아있는 경우
     if(m_currentBufferSize < m_frameRate * m_videoSpeed){
       // 마지막 수신한 프레임이 끝 프레임이 아니라면 즉 영상을 아직 받아야 하는 상태라면
@@ -212,6 +221,7 @@ namespace ns3
         // 영상이 모두 수신되었고 자투리 부분이 남아있던 것이라면 남은 영상 프레임을 클리어 해줍니다.
         m_currentBufferSize = 0;
       }
+      m_bufferEvent = Simulator::Schedule(Seconds(1.0), &VideoStreamClient::ReadFromBuffer, this);
       return(-1);
     // 소비 가능한 만큼 영상이 남아있다면
     } else {
@@ -257,7 +267,7 @@ namespace ns3
         // 최근 들어온 프레임들에 대해서
         for (int frame_idx = m_lastRecvFrame; frame_idx < TOTAL_VIDEO_FRAME; frame_idx++) {
           // 해당 프레임들의 모든 패킷에 대해서 잘 수신되었는지 확인한다.
-          for (int p_idx = 0; p_idx < RESOLUTION / MAX_PACKET_SIZE + 1; p_idx++) {
+          for (int p_idx = 0; p_idx < m_resolution / MAX_PACKET_SIZE + 1; p_idx++) {
             // false는 수신이 안된것을 표시하므로 바로 break합니다.
             if(m_FramePacketCounter[frame_idx][p_idx] == false) {
               BREaK = true;
@@ -265,9 +275,9 @@ namespace ns3
             // false 없고
             } else {
               // RESOLUTION 가 MAX_PACKET_SIZE로 떨어질때
-              if (RESOLUTION % MAX_PACKET_SIZE == 0){
+              if (m_resolution % MAX_PACKET_SIZE == 0){
                 // 프레임의 마지막 패킷이 도착한것이 확인되었을 경우 (R 4, M 2, p_idx = 1)
-                if (RESOLUTION / MAX_PACKET_SIZE == p_idx + 1){
+                if (m_resolution / MAX_PACKET_SIZE == p_idx + 1){
                   // 안정적으로 수신한 프레임을 수정합니다.
                   m_lastRecvFrame = frame_idx + 1;
                   // 소비할 프레임 버퍼 사이즈도 증가시켜줍니다.
@@ -277,7 +287,7 @@ namespace ns3
               // RESOLUTION 가 MAX_PACKET_SIZE로 안떨어질때
               } else {
                 // 프레임의 마지막 패킷이 도착한것이 확인되었을 경우
-                if (RESOLUTION / MAX_PACKET_SIZE == p_idx){
+                if (m_resolution / MAX_PACKET_SIZE == p_idx){
                   // 안정적으로 수신한 프레임을 수정합니다.
                   m_lastRecvFrame = frame_idx + 1;
                   // 소비할 프레임 버퍼 사이즈도 증가시켜줍니다.
@@ -289,6 +299,18 @@ namespace ns3
           }
           if(BREaK == true){
             break;
+          }
+        }
+        //!!!
+        if (m_rebufferCounter >= 3){
+          if (m_videoLevel > 0){
+            m_videoLevel--;
+            m_resolution = m_resolutionArray[m_videoLevel];
+            uint8_t send_Buffer[MAX_PACKET_SIZE];
+            sprintf((char *) send_Buffer, "%hu", m_resolution);
+            Ptr<Packet> levelPacket = Create<Packet>(send_Buffer, MAX_PACKET_SIZE);
+            socket->SendTo(levelPacket, 0, from);
+            m_rebufferCounter = 0;
           }
         }
       }
