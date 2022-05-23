@@ -103,7 +103,6 @@ private:
   uint32_t m_lastRecvFrame;       //!< Last received frame number
   uint32_t m_lastBufferSize;      //!< Last size of the buffer
   uint32_t m_currentBufferSize;   //!< Size of the frame buffer
-  uint32_t m_playTime;
 
   uint32_t m_videotime;
 
