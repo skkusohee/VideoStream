@@ -52,7 +52,7 @@ namespace ns3
     m_stopCounter = 0;
     m_lastRecvFrame = 0;
     m_rebufferCounter = 0;
-    m_playTime = 0;
+    m_videotime = 0;
     m_bufferEvent = EventId();
     m_sendEvent = EventId();
     //!!!
@@ -221,11 +221,15 @@ namespace ns3
         // 영상이 모두 수신되었고 자투리 부분이 남아있던 것이라면 남은 영상 프레임을 클리어 해줍니다.
         m_currentBufferSize = 0;
       }
+      NS_LOG_INFO(Simulator::Now().GetSeconds() << "\tBuffercount\t" << m_rebufferCounter);
       m_bufferEvent = Simulator::Schedule(Seconds(1.0), &VideoStreamClient::ReadFromBuffer, this);
       return(-1);
     // 소비 가능한 만큼 영상이 남아있다면
     } else {
       // 1초어치 영상을 소비합니다.
+      m_videotime += 1;
+      NS_LOG_INFO(Simulator::Now().GetSeconds() << "\tVideotime" << m_videotime);
+            
       m_currentBufferSize -= m_frameRate * m_videoSpeed;
       // 영상이 최근 재생되었으므로 버퍼링 횟수도 초기화 합니다.
       m_rebufferCounter = 0;
