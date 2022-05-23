@@ -14,7 +14,7 @@
 #include <cmath>
 
 #define MAX_PACKET_SIZE 30000      // Server 쪽이랑 맞춰주세용
-#define TOTAL_VIDEO_FRAME 1000    // Server 쪽이랑 맞춰주세용
+#define TOTAL_VIDEO_FRAME 100    // Server 쪽이랑 맞춰주세용
 #define RESOLUTION 76800          // 초이스 {76800, 230400, 409920, 921600, 2073600}
 // 240p      320 *  240 =   76800
 // 360p      640 *  360 =  230400
@@ -85,26 +85,26 @@ private:
    */
   void HandleRead (Ptr<Socket> socket);
 
-  Ptr<Socket> m_socket; //!< Socket
-  Address m_peerAddress; //!< Remote peer address
-  uint16_t m_peerPort; //!< Remote peer port
+  Ptr<Socket> m_socket;           //!< Socket
+  Address m_peerAddress;          //!< Remote peer address
+  uint16_t m_peerPort;            //!< Remote peer port
 
-  uint16_t m_initialDelay; //!< Seconds to wait before displaying the content
-  uint16_t m_stopCounter; //!< Counter to decide if the video streaming finishes
-  uint16_t m_rebufferCounter; //!< Counter of the rebuffering event
+  uint16_t m_initialDelay;        //!< Seconds to wait before displaying the content
+  uint16_t m_stopCounter;         //!< Counter to decide if the video streaming finishes
+  uint16_t m_rebufferCounter;     //!< Counter of the rebuffering event
 
-  uint32_t m_resolution; //!< The quality of the video from the server
+  uint32_t m_resolution;          //!< The quality of the video from the server
 
-  uint32_t m_frameRate; //!< Number of frames per second to be played
-  uint32_t m_videoSpeed;  // 배속을 여기에 넣으세용
+  uint32_t m_frameRate;           //!< Number of frames per second to be played
+  uint32_t m_videoSpeed;          // 배속을 여기에 넣으세용
 
-  uint32_t m_frameSize; //!< Total size of packets from one frame
-  uint32_t m_lastRecvFrame; //!< Last received frame number
-  uint32_t m_lastBufferSize; //!< Last size of the buffer
-  uint32_t m_currentBufferSize; //!< Size of the frame buffer
+  uint32_t m_frameSize;           //!< Total size of packets from one frame
+  uint32_t m_lastRecvFrame;       //!< Last received frame number
+  uint32_t m_lastBufferSize;      //!< Last size of the buffer
+  uint32_t m_currentBufferSize;   //!< Size of the frame buffer
 
-  EventId m_bufferEvent; //!< Event to read from the buffer
-  EventId m_sendEvent; //!< Event to send data to the server
+  EventId m_bufferEvent;          //!< Event to read from the buffer
+  EventId m_sendEvent;            //!< Event to send data to the server
 
   bool m_FramePacketCounter[TOTAL_VIDEO_FRAME][RESOLUTION/MAX_PACKET_SIZE + 1];
 };
