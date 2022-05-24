@@ -47,7 +47,7 @@ namespace ns3
     m_currentBufferSize = 0;
     m_frameSize = 0;
     //m_resolution = 76800; // 글로벌 변수 RESOLUTION과 같은값 넣어주세요
-    m_frameRate = 1;
+    m_frameRate = 10;
     m_videoSpeed = 1;     // 이거 골라서 넣으세용 디폴트 1배속
     m_stopCounter = 0;
     m_lastRecvFrame = 0;
@@ -210,6 +210,7 @@ namespace ns3
     // 하지만 새로 짠 코드에서는 TOTAL_VIDEO_FRAME으로 영상의 총 길이를 저장하고 있기 때문에
     // 이를통해 영상이 끝났는지를 판별할 수 있어서 3초동안 정지면 영상끝 부분 제거하였고
     // 버퍼링 측정 코드는 사용하시려면 추가 하셔야 할 수 있습니다.
+    printf("%d, %d\n", m_currentBufferSize, m_rebufferCounter);
 
     // 소비할 수 없는만큼 버퍼에 영상의 프레임이 남아있는 경우
     if(m_currentBufferSize < m_frameRate * m_videoSpeed){
@@ -217,6 +218,14 @@ namespace ns3
       if(m_lastRecvFrame < TOTAL_VIDEO_FRAME){
         // 버퍼링 케이스에 해당합니다. 
         m_rebufferCounter++;
+        if(m_lastRecvFrame < TOTAL_VIDEO_FRAME){
+          // 패킷에 수신하고자 하는 화질, 몇번째 프레임부터 서버에서 송신해주면 되는지, 초당 몇개의 프레임을 소비하는지 의 데이터를 담아서 서버로 요청을 넣습니다.
+          // 서버쪽에서는 요청을 받으면 몇번째 프레임부터 client가 받고싶어하는지 에서부터 앞으로 5초간의 영상(초당 몇개 프레임 소비하는지 * 5) 만큼의 영상을 보내주게 됩니다.
+          uint8_t send_Buffer[MAX_PACKET_SIZE];
+          sprintf((char *)send_Buffer, "res:%u lrf:%u fr:%u", m_resolution, m_lastRecvFrame, m_frameRate * m_videoSpeed);
+          Ptr<Packet> firstPacket = Create<Packet>(send_Buffer, MAX_PACKET_SIZE);
+          m_socket->Send(firstPacket);
+        }
       } else{
         // 영상이 모두 수신되었고 자투리 부분이 남아있던 것이라면 남은 영상 프레임을 클리어 해줍니다.
         m_currentBufferSize = 0;
@@ -271,7 +280,7 @@ namespace ns3
         // 최근 들어온 프레임들에 대해서
         for (int frame_idx = m_lastRecvFrame; frame_idx < TOTAL_VIDEO_FRAME; frame_idx++) {
           // 해당 프레임들의 모든 패킷에 대해서 잘 수신되었는지 확인한다.
-          for (int p_idx = 0; p_idx < m_resolution / MAX_PACKET_SIZE + 1; p_idx++) {
+          for (int p_idx = 0; p_idx < int(m_resolution) / MAX_PACKET_SIZE + 1; p_idx++) {
             // false는 수신이 안된것을 표시하므로 바로 break합니다.
             if(m_FramePacketCounter[frame_idx][p_idx] == false) {
               BREaK = true;
@@ -279,9 +288,9 @@ namespace ns3
             // false 없고
             } else {
               // RESOLUTION 가 MAX_PACKET_SIZE로 떨어질때
-              if (m_resolution % MAX_PACKET_SIZE == 0){
+              if (int(m_resolution) % MAX_PACKET_SIZE == 0){
                 // 프레임의 마지막 패킷이 도착한것이 확인되었을 경우 (R 4, M 2, p_idx = 1)
-                if (m_resolution / MAX_PACKET_SIZE == p_idx + 1){
+                if (int(m_resolution) / MAX_PACKET_SIZE == p_idx + 1){
                   // 안정적으로 수신한 프레임을 수정합니다.
                   m_lastRecvFrame = frame_idx + 1;
                   // 소비할 프레임 버퍼 사이즈도 증가시켜줍니다.
@@ -291,7 +300,7 @@ namespace ns3
               // RESOLUTION 가 MAX_PACKET_SIZE로 안떨어질때
               } else {
                 // 프레임의 마지막 패킷이 도착한것이 확인되었을 경우
-                if (m_resolution / MAX_PACKET_SIZE == p_idx){
+                if (int(m_resolution) / MAX_PACKET_SIZE == p_idx){
                   // 안정적으로 수신한 프레임을 수정합니다.
                   m_lastRecvFrame = frame_idx + 1;
                   // 소비할 프레임 버퍼 사이즈도 증가시켜줍니다.
