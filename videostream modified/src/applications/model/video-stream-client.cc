@@ -210,7 +210,7 @@ namespace ns3
     // 하지만 새로 짠 코드에서는 TOTAL_VIDEO_FRAME으로 영상의 총 길이를 저장하고 있기 때문에
     // 이를통해 영상이 끝났는지를 판별할 수 있어서 3초동안 정지면 영상끝 부분 제거하였고
     // 버퍼링 측정 코드는 사용하시려면 추가 하셔야 할 수 있습니다.
-    printf("%d, %d\n", m_currentBufferSize, m_rebufferCounter);
+    printf("확보중인 프레임 : %d, 버퍼링 횟수 : %d\n", m_currentBufferSize, m_rebufferCounter);
 
     // 소비할 수 없는만큼 버퍼에 영상의 프레임이 남아있는 경우
     if(m_currentBufferSize < m_frameRate * m_videoSpeed){
@@ -226,7 +226,10 @@ namespace ns3
           Ptr<Packet> firstPacket = Create<Packet>(send_Buffer, MAX_PACKET_SIZE);
           m_socket->Send(firstPacket);
         }
+        //NS_LOG_INFO(Simulator::Now().GetSeconds() << "\tBuffercount\t" << m_rebufferCounter);
+        m_bufferEvent = Simulator::Schedule(Seconds(1.0), &VideoStreamClient::ReadFromBuffer, this);
       } else{
+        printf("영상끝났음\n");
         // 영상이 모두 수신되었고 자투리 부분이 남아있던 것이라면 남은 영상 프레임을 클리어 해줍니다.
         m_currentBufferSize = 0;
       }
@@ -238,8 +241,7 @@ namespace ns3
     } else {
       // 1초어치 영상을 소비합니다.
       m_videotime += 1;
-      //NS_LOG_INFO(Simulator::Now().GetSeconds() << "\tVideotime" << m_videotime);
-            
+      printf("                                               영상 소비 %d\n", m_frameRate * m_videoSpeed);
       m_currentBufferSize -= m_frameRate * m_videoSpeed;
       // 영상이 최근 재생되었으므로 버퍼링 횟수도 초기화 합니다.
       m_rebufferCounter = 0;
