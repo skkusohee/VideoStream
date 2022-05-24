@@ -113,7 +113,7 @@ namespace ns3 {
 
     NS_ASSERT(clientInfo->m_sendEvent.IsExpired());
     // 클라이언트가 요청하는 resolution의 비디오를 보내는 부분입니다.
-    resolution = clientInfo->m_videoLevel;
+    resolution = clientInfo->m_videoLevel;//!!여기 m_videoLevel 살리면 될듯 (resolution idx)
 
     // 클라이언트가 요청한 프레임부터 클라이언트가 5초간 소비할 프레임에 대해 send합니다.
     for (uint frame_idx = clientInfo->m_sent; frame_idx < clientInfo->m_sent + clientInfo->m_frameRate * 5; frame_idx++) {
