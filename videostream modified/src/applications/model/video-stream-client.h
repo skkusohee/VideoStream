@@ -14,8 +14,8 @@
 #include <cmath>
 
 #define MAX_PACKET_SIZE 30000      // Server 쪽이랑 맞춰주세용
-#define TOTAL_VIDEO_FRAME 100    // Server 쪽이랑 맞춰주세용
-#define RESOLUTION 76800          // 초이스 {76800, 230400, 409920, 921600, 2073600}
+#define TOTAL_VIDEO_FRAME 1000    // Server 쪽이랑 맞춰주세용
+#define RESOLUTION 230400          // 초이스 {76800, 230400, 409920, 921600, 2073600}
 // 240p      320 *  240 =   76800
 // 360p      640 *  360 =  230400
 // 480p      854 *  480 =  409920

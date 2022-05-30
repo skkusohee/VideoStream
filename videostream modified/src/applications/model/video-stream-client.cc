@@ -232,10 +232,13 @@ namespace ns3
         printf("영상끝났음\n");
         // 영상이 모두 수신되었고 자투리 부분이 남아있던 것이라면 남은 영상 프레임을 클리어 해줍니다.
         m_currentBufferSize = 0;
+        m_bufferEvent = Simulator::Schedule(Seconds(1.0), &VideoStreamClient::ReadFromBuffer, this);
       }
       NS_LOG_UNCOND("0\t" << Simulator::Now().GetSeconds() << "\t" << m_rebufferCounter);
-      NS_LOG_UNCOND("1\t" << Simulator::Now().GetSeconds() << "\t" << m_videotime);
-      m_bufferEvent = Simulator::Schedule(Seconds(1.0), &VideoStreamClient::ReadFromBuffer, this);
+      //NS_LOG_UNCOND("1\t" << Simulator::Now().GetSeconds() << "\t" << m_videotime);
+      NS_LOG_UNCOND("1\t" << Simulator::Now().GetSeconds() << "\t" << m_currentBufferSize);
+      NS_LOG_UNCOND("2\t" << Simulator::Now().GetSeconds() << "\t" << m_videotime);
+      //m_bufferEvent = Simulator::Schedule(Seconds(1.0), &VideoStreamClient::ReadFromBuffer, this);
       return(-1);
     // 소비 가능한 만큼 영상이 남아있다면
     } else {
@@ -256,7 +259,9 @@ namespace ns3
       }
       // 1초뒤에 다시 자신을 실행합니다.
       NS_LOG_UNCOND("0\t" << Simulator::Now().GetSeconds() << "\t" << m_rebufferCounter);
-      NS_LOG_UNCOND("1\t" << Simulator::Now().GetSeconds() << "\t" << m_videotime);
+      //NS_LOG_UNCOND("1\t" << Simulator::Now().GetSeconds() << "\t" << m_videotime);
+      NS_LOG_UNCOND("1\t" << Simulator::Now().GetSeconds() << "\t" << m_currentBufferSize);
+      NS_LOG_UNCOND("2\t" << Simulator::Now().GetSeconds() << "\t" << m_videotime);
       m_bufferEvent = Simulator::Schedule(Seconds(1.0), &VideoStreamClient::ReadFromBuffer, this);
       return (m_currentBufferSize);
     }
