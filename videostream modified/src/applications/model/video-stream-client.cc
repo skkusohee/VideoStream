@@ -1,5 +1,4 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-
 #include "ns3/log.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
@@ -47,8 +46,8 @@ namespace ns3
     m_currentBufferSize = 0;
     m_frameSize = 0;
     //m_resolution = 76800; // 글로벌 변수 RESOLUTION과 같은값 넣어주세요
-    m_frameRate = 10;
-    m_videoSpeed = 1;     // 이거 골라서 넣으세용 디폴트 1배속
+    m_frameRate = 5;
+    m_videoSpeed = 2;     // 이거 골라서 넣으세용 디폴트 1배속
     m_stopCounter = 0;
     m_lastRecvFrame = 0;
     m_rebufferCounter = 0;
@@ -56,12 +55,34 @@ namespace ns3
     m_bufferEvent = EventId();
     m_sendEvent = EventId();
     //!!!
-    m_resolutionArray[0] = 76800;
-    m_resolutionArray[1] = 230400;
-    m_resolutionArray[2] = 409920;
-    m_resolutionArray[3] = 921600;
-    m_resolutionArray[4] = 2073600;
-    m_videoLevel = 1;
+    //2배속인 경우에, 1초에 40 프레임을 확보 해야 함. --> 최소값이 40프레임 이면 괜찮을 것. 
+    //1배속인 경우에 1초에 20프레임 확보 해야 함. -> 최대값이 20프레임 
+    m_resolutionArray[0] = 100001; //13
+    m_resolutionArray[1] = 150001; //8
+    m_resolutionArray[2] = 200001; //7
+    m_resolutionArray[3] = 230001; //6
+    m_resolutionArray[4] = 250001; //5
+    m_resolutionArray[5] = 300001; //4
+
+    //58000 59919 26
+    //55000 26프레임 확보
+    
+    //50000 26프레임 확보
+    //60001 17프레임 확보
+
+    //2배속인 경우 1초에 10 프레임 확보
+    //1배속인 경우 1초에 5 프레임 확보
+
+
+    //100001 13프레임 확보
+    //150001 8 프레임
+    //200001 7
+    //230001; //1초당 6프레임 확보
+    //250001 5프레임
+    //300001  4 프레임
+  
+
+    m_videoLevel = 5;
     m_resolution = m_resolutionArray[m_videoLevel];
     for (size_t i = 0; i < TOTAL_VIDEO_FRAME; i++)
     {
@@ -201,6 +222,7 @@ namespace ns3
       NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << "s client sent 10 bytes to " << Inet6SocketAddress::ConvertFrom(m_peerAddress).GetIpv6() << " port " << Inet6SocketAddress::ConvertFrom(m_peerAddress).GetPort());
     }
   }
+  int flag =0;
   // 받아서 정리해놓은 프레임들을 소비하고 서버에 5초간의 영상을 요청하는 역할
   uint32_t VideoStreamClient::ReadFromBuffer(void) {
     //************요약***************
@@ -210,6 +232,7 @@ namespace ns3
     // 하지만 새로 짠 코드에서는 TOTAL_VIDEO_FRAME으로 영상의 총 길이를 저장하고 있기 때문에
     // 이를통해 영상이 끝났는지를 판별할 수 있어서 3초동안 정지면 영상끝 부분 제거하였고
     // 버퍼링 측정 코드는 사용하시려면 추가 하셔야 할 수 있습니다.
+    if(flag) return(-1);
     printf("확보중인 프레임 : %d, 버퍼링 횟수 : %d\n", m_currentBufferSize, m_rebufferCounter);
 
     // 소비할 수 없는만큼 버퍼에 영상의 프레임이 남아있는 경우
@@ -232,11 +255,30 @@ namespace ns3
         printf("영상끝났음\n");
         // 영상이 모두 수신되었고 자투리 부분이 남아있던 것이라면 남은 영상 프레임을 클리어 해줍니다.
         m_currentBufferSize = 0;
+        m_bufferEvent = Simulator::Schedule(Seconds(1.0), &VideoStreamClient::ReadFromBuffer, this);
+        flag =1;
       }
+
+
+      //////////
+      if (m_rebufferCounter >= 1){
+
+          if (m_videoLevel > 0){
+            m_videoLevel--;
+             printf("1. videoLevel: %d to %d  \n",m_videoLevel+1, m_videoLevel);
+
+            m_resolution = m_resolutionArray[m_videoLevel];
+            uint8_t send_Buffer[MAX_PACKET_SIZE];
+            sprintf((char *) send_Buffer, "%hu", m_resolution);
+            Ptr<Packet> levelPacket = Create<Packet>(send_Buffer, MAX_PACKET_SIZE);
+            m_socket->Send(levelPacket);
+          }
+        }
+
       NS_LOG_UNCOND("0\t" << Simulator::Now().GetSeconds() << "\t" << m_rebufferCounter);
       NS_LOG_UNCOND("1\t" << Simulator::Now().GetSeconds() << "\t" << m_videotime);
-      m_bufferEvent = Simulator::Schedule(Seconds(1.0), &VideoStreamClient::ReadFromBuffer, this);
-      return(-1);
+      NS_LOG_UNCOND("2\t" << Simulator::Now().GetSeconds() << "\t" << m_videoLevel);
+      return (-1);
     // 소비 가능한 만큼 영상이 남아있다면
     } else {
       // 1초어치 영상을 소비합니다.
@@ -254,12 +296,37 @@ namespace ns3
         Ptr<Packet> firstPacket = Create<Packet>(send_Buffer, MAX_PACKET_SIZE);
         m_socket->Send(firstPacket);
       }
+
+/////
+ else if(m_currentBufferSize >= m_frameRate*m_videoSpeed){
+          if(m_videoLevel<5){
+
+            m_videoLevel++;
+            printf("2. videoLevel: %d to %d  \n",m_videoLevel-1, m_videoLevel);
+
+            m_resolution = m_resolutionArray[m_videoLevel];
+            uint8_t send_Buffer[MAX_PACKET_SIZE];
+            sprintf((char *) send_Buffer, "%hu", m_resolution);
+            Ptr<Packet> levelPacket = Create<Packet>(send_Buffer, MAX_PACKET_SIZE);
+            m_socket->Send(levelPacket);
+          }
+        }
+
+
       // 1초뒤에 다시 자신을 실행합니다.
       NS_LOG_UNCOND("0\t" << Simulator::Now().GetSeconds() << "\t" << m_rebufferCounter);
       NS_LOG_UNCOND("1\t" << Simulator::Now().GetSeconds() << "\t" << m_videotime);
+      NS_LOG_UNCOND("2\t" << Simulator::Now().GetSeconds() << "\t" << m_videoLevel);
+
       m_bufferEvent = Simulator::Schedule(Seconds(1.0), &VideoStreamClient::ReadFromBuffer, this);
       return (m_currentBufferSize);
     }
+    
+        
+       
+
+
+
   }
   // 패킷을 통해 프레임 조각들을 받아서 프레임을 만드는 역할
   void VideoStreamClient::HandleRead(Ptr<Socket> socket) {
@@ -320,17 +387,30 @@ namespace ns3
           }
         }
         //!!!
-        if (m_rebufferCounter >= 3){
-          if (m_videoLevel > 0){
-            m_videoLevel--;
-            m_resolution = m_resolutionArray[m_videoLevel];
+        
+
+        /*
+        if(m_rebufferCounter>=3){
+          m_videoLevel =1;
+
+          m_resolution = m_resolutionArray[m_videoLevel];
             uint8_t send_Buffer[MAX_PACKET_SIZE];
             sprintf((char *) send_Buffer, "%hu", m_resolution);
             Ptr<Packet> levelPacket = Create<Packet>(send_Buffer, MAX_PACKET_SIZE);
             socket->SendTo(levelPacket, 0, from);
-            m_rebufferCounter = 0;
-          }
         }
+        else if(m_rebufferCounter<2){
+          if(m_videoLevel<=2) m_videoLevel +=2;
+
+          m_resolution = m_resolutionArray[m_videoLevel];
+            uint8_t send_Buffer[MAX_PACKET_SIZE];
+            sprintf((char *) send_Buffer, "%hu", m_resolution);
+            Ptr<Packet> levelPacket = Create<Packet>(send_Buffer, MAX_PACKET_SIZE);
+            socket->SendTo(levelPacket, 0, from);
+        }
+        */
+        
+        
       }
     }
   }
