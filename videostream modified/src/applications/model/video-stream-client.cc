@@ -52,16 +52,35 @@ namespace ns3
     m_stopCounter = 0;
     m_lastRecvFrame = 0;
     m_rebufferCounter = 0;
+    //***
+    m_currentbufferCounter = 0;
+    m_lastCutTime=0;
+    //***
     m_videotime = 0;
     m_bufferEvent = EventId();
     m_sendEvent = EventId();
     //!!!
-    m_resolutionArray[0] = 76800;
-    m_resolutionArray[1] = 230400;
-    m_resolutionArray[2] = 409920;
-    m_resolutionArray[3] = 921600;
-    m_resolutionArray[4] = 2073600;
-    m_videoLevel = 1;
+    m_resolutionArray[0] = 70000;
+    m_resolutionArray[1] = 105000;
+    m_resolutionArray[2] = 140000;
+    m_resolutionArray[3] = 175000;
+    m_resolutionArray[4] = 210000;
+    m_resolutionArray[5] = 245000;
+    m_resolutionArray[6] = 280000;
+    m_resolutionArray[7] = 315000;
+    m_resolutionArray[8] = 350000;
+    m_resolutionArray[9] = 385000;
+    m_resolutionArray[10] = 420000;
+    m_resolutionArray[11] = 455000;
+    m_resolutionArray[12] = 490000;
+    m_resolutionArray[13] = 525000;
+    m_resolutionArray[14] = 560000;
+    m_resolutionArray[15] = 595000;
+    m_resolutionArray[16] = 630000;
+    m_resolutionArray[17] = 665000;
+    m_resolutionArray[18] = 700000;
+    m_resolutionArray[19] = 735000;
+    m_videoLevel = 19;
     m_resolution = m_resolutionArray[m_videoLevel];
     for (size_t i = 0; i < TOTAL_VIDEO_FRAME; i++)
     {
@@ -218,6 +237,7 @@ namespace ns3
       if(m_lastRecvFrame < TOTAL_VIDEO_FRAME){
         // 버퍼링 케이스에 해당합니다. 
         m_rebufferCounter++;
+	m_currentbufferCounter+=1.0f;
         if(m_lastRecvFrame < TOTAL_VIDEO_FRAME){
           // 패킷에 수신하고자 하는 화질, 몇번째 프레임부터 서버에서 송신해주면 되는지, 초당 몇개의 프레임을 소비하는지 의 데이터를 담아서 서버로 요청을 넣습니다.
           // 서버쪽에서는 요청을 받으면 몇번째 프레임부터 client가 받고싶어하는지 에서부터 앞으로 5초간의 영상(초당 몇개 프레임 소비하는지 * 5) 만큼의 영상을 보내주게 됩니다.
@@ -248,6 +268,8 @@ namespace ns3
       m_currentBufferSize -= m_frameRate * m_videoSpeed;
       // 영상이 최근 재생되었으므로 버퍼링 횟수도 초기화 합니다.
       m_rebufferCounter = 0;
+      m_lastCutTime=Simulator::Now().GetSeconds();
+      m_currentbufferCounter=0;
       // 마지막 수신한 프레임이 끝 프레임이 아니라면 즉 영상을 아직 받아야 하는 상태라면
       if(m_lastRecvFrame < TOTAL_VIDEO_FRAME){
         // 패킷에 수신하고자 하는 화질, 몇번째 프레임부터 서버에서 송신해주면 되는지, 초당 몇개의 프레임을 소비하는지 의 데이터를 담아서 서버로 요청을 넣습니다.
@@ -324,7 +346,35 @@ namespace ns3
             break;
           }
         }
-        //!!!
+        
+	double t=Simulator::Now().GetSeconds()-m_lastCutTime;
+	//printf("current buffering per seconds is : %lf\n", m_totalbufferCounter/t);
+	if(m_currentbufferCounter/t >= 0.1f&&m_videoLevel>0){
+		m_videoLevel--;
+		m_lastCutTime=Simulator::Now().GetSeconds();
+		m_currentbufferCounter=0;
+		m_rebufferCounter=0;
+		printf("current level decrease to %u\n", m_videoLevel);
+           	m_resolution = m_resolutionArray[m_videoLevel];
+           	uint8_t send_Buffer[MAX_PACKET_SIZE];
+            	sprintf((char *) send_Buffer, "%hu", m_resolution);
+            	Ptr<Packet> levelPacket = Create<Packet>(send_Buffer, MAX_PACKET_SIZE);
+           	socket->SendTo(levelPacket, 0, from);
+	}else if(m_currentbufferCounter/t < 0.2f&&m_rebufferCounter>=1){
+		if(m_videoLevel<19){
+			m_videoLevel++;
+			m_lastCutTime=Simulator::Now().GetSeconds();
+			m_currentbufferCounter=0;
+			m_rebufferCounter=0;
+			printf("current level increase to %u\n", m_videoLevel);
+           		m_resolution = m_resolutionArray[m_videoLevel];
+           		uint8_t send_Buffer[MAX_PACKET_SIZE];
+           	 	sprintf((char *) send_Buffer, "%hu", m_resolution);
+            		Ptr<Packet> levelPacket = Create<Packet>(send_Buffer, MAX_PACKET_SIZE);
+           		socket->SendTo(levelPacket, 0, from);
+		}
+	}
+	/*
         if (m_rebufferCounter >= 3){
           if (m_videoLevel > 0){
             m_videoLevel--;
@@ -333,9 +383,10 @@ namespace ns3
             sprintf((char *) send_Buffer, "%hu", m_resolution);
             Ptr<Packet> levelPacket = Create<Packet>(send_Buffer, MAX_PACKET_SIZE);
             socket->SendTo(levelPacket, 0, from);
-            m_rebufferCounter = 0;
+            //m_rebufferCounter = 0;
           }
         }
+	*/
       }
     }
   }

@@ -15,7 +15,7 @@
 
 #define MAX_PACKET_SIZE 30000      // Server 쪽이랑 맞춰주세용
 #define TOTAL_VIDEO_FRAME 1000    // Server 쪽이랑 맞춰주세용
-#define RESOLUTION 230400          // 초이스 {76800, 230400, 409920, 921600, 2073600}
+#define RESOLUTION 735000          // 초이스 {76800, 230400, 409920, 921600, 2073600}
 // 240p      320 *  240 =   76800
 // 360p      640 *  360 =  230400
 // 480p      854 *  480 =  409920
@@ -92,6 +92,10 @@ private:
   uint16_t m_initialDelay;        //!< Seconds to wait before displaying the content
   uint16_t m_stopCounter;         //!< Counter to decide if the video streaming finishes
   uint16_t m_rebufferCounter;     //!< Counter of the rebuffering event
+  double m_currentbufferCounter;
+  double m_lastCutTime;
+	
+
 
   uint32_t m_resolution;          //!< The quality of the video from the server
   uint32_t m_videoLevel;          //!!!
@@ -110,7 +114,7 @@ private:
   EventId m_sendEvent;            //!< Event to send data to the server
 
   bool m_FramePacketCounter[TOTAL_VIDEO_FRAME][RESOLUTION/MAX_PACKET_SIZE + 1];
-  uint32_t m_resolutionArray[5]; //!!!
+  uint32_t m_resolutionArray[20]; //!!!
 };
 
 } // namespace ns3
