@@ -10,9 +10,8 @@ Based on the ns-3 and network models learned in class, a "speed controlled strea
 Team member is Kang Seung Mok, Yoon So Hee, Lee In Su, Lee Hyun Jeong, Cha Jeong Min and Choi Jae Ik.
 We divided it into a development team and a simulation team.
 
-Team Development : Kang Seung Mok, Yoon So Hee, Lee Hyun Jeong, Choi Jae Ik
-
-Team Simulation : Lee In Su, Cha Jeong Min
+- Team Development : Kang Seung Mok, Yoon So Hee, Lee Hyun Jeong, Choi Jae Ik
+- Team Simulation : Lee In Su, Cha Jeong Min
 
 ## Installation
 
@@ -54,6 +53,10 @@ ns-3 (version 3.30), Python (`python 2.7+` or `python 3.5+`), C++ compiler (`cla
 
 ### Detailed explanation
 This video streaming program start with high video resolution. It automatically modify the video quality according to the current buffering. If you want to get more detailed information, check the `Results` section right down below.
+
+## Issue
+
+During speed control, buffering occurs when the speed increases too much, so it is implemented to automatically improve resolution.
 
 ## Results
 
