@@ -21,16 +21,17 @@ ns-3 (version 3.30), Python (`python 2.7+` or `python 3.5+`), C++ compiler (`cla
 
 ### How to make graph
 1. Type the following commands 
-`awk '$1=="0" {print $2 "\t" $3}' stream.dat > buffer.dat
-awk '$1=="1" {print $2 "\t" $3}' stream.dat > playtime.dat
-awk '$1=="2" {print $2 "\t" $3}' stream.dat > videolevel.dat
-gnuplot
-set term png
-set output "stream.png"
-set y2tics
-set tics nomirror
-set y2range [0:5]
-plot "buffer.dat" using 1:2 title "BufferCount" with linespoints, "playtime.dat" using 1:2 title "PlayTime" with linespoints, "videolevel.dat" using 1:2 axes x1y2 title "ResolutionLevel" with linespoints`
+
+`awk '$1=="0" {print $2 "\t" $3}' stream.dat > buffer.dat`
+`awk '$1=="1" {print $2 "\t" $3}' stream.dat > playtime.dat`
+`awk '$1=="2" {print $2 "\t" $3}' stream.dat > videolevel.dat`
+`gnuplot`
+`set term png`
+`set output "stream.png"`
+`set y2tics`
+`set tics nomirror`
+`set y2range [0:5]`
+`plot "buffer.dat" using 1:2 title "BufferCount" with linespoints, "playtime.dat" using 1:2 title "PlayTime" with linespoints, "videolevel.dat" using 1:2 axes x1y2 title "ResolutionLevel" with linespoints`
 
 2. Quit gnuplot and check `stream.png` file.
 
