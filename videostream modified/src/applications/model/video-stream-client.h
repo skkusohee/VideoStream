@@ -75,7 +75,7 @@ private:
 
   bool m_FramePacketCounter[TOTAL_VIDEO_FRAME][RESOLUTION/MAX_PACKET_SIZE + 1];
   uint32_t m_resolutionArray[6]; 
-
+};
 } // namespace ns3
 
 #endif /* VIDEO_STREAM_CLIENT_H */
