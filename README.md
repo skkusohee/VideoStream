@@ -17,7 +17,7 @@ ns-3 (version 3.30), Python (`python 2.7+` or `python 3.5+`), C++ compiler (`cla
 1. Download and build `ns-3` following the official document [here](https://www.nsnam.org/docs/release/3.30/tutorial/singlehtml/index.html#getting-started).
 2. Copy the files **exactly** into the folders of the `ns-3`. (Be aware of the `wscript` in `src->applications`, otherwise the video streaming application will not be installed!)
 3. Run `./waf` or `./waf build` to build the new application.
-4. Run `./waf --run videoStreamer` for the testing program (you can change `CASE` in `videoStreamTest.cc` for different network environments).
+4. Run `./waf --run videoStreamer 2> stream.dat` for the testing program and make output data file(you can change `CASE` in `videoStreamTest.cc` for different network environments).
 
 ## Results
 
@@ -26,7 +26,7 @@ ns-3 (version 3.30), Python (`python 2.7+` or `python 3.5+`), C++ compiler (`cla
 ![Different test cases](./attachments/network_cases.png)
 
 - (1) P2P network with 1 server and 1 client
-- (2) Wireless network with 1 server and 1 clients
+- (2) Wireless network with 1 server and 1 client
 
  
 ### Simulation
