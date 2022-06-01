@@ -20,6 +20,15 @@ ns-3 (version 3.30), Python (`python 2.7+` or `python 3.5+`), C++ compiler (`cla
 4. Run `./waf --run videoStreamer` for the testing program (you can change `CASE` in `videoStreamTest.cc` for different network environments).
 
 ## Results
+
+### Network configurations
+
+![Different test cases](./attachments/network_cases.png)
+
+- (1) P2P network with 1 server and 1 client
+- (2) Wireless network with 1 server and 1 clients
+
+ 
 ### Simulation
 
 
