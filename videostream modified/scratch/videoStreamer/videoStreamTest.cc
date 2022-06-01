@@ -1,11 +1,3 @@
-/*****************************************************
-*
-* File:  videoStreamTest.cc
-*
-* Explanation:  This script modifies the tutorial first.cc
-*               to test the video stream application.
-*
-*****************************************************/
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
@@ -18,15 +10,6 @@
 
 using namespace ns3;
 
-//#define NS3_LOG_ENABLE
-
-/**
- * @brief The test cases include:
- * 1. P2P network with 1 server and 1 client
- * 2. P2P network with 1 server and 2 clients
- * 3. Wireless network with 1 server and 3 mobile clients
- * 4. Wireless network with 3 servers and 3 mobile clients
- */
 #define CASE 1
 
 NS_LOG_COMPONENT_DEFINE ("VideoStreamTest");
@@ -67,9 +50,6 @@ main (int argc, char *argv[])
     clientApp.Stop (Seconds (100.0));
 
     VideoStreamServerHelper videoServer (5000);
-    //videoServer.SetAttribute ("MaxPacketSize", UintegerValue (1400));
-    //videoServer.SetAttribute ("FrameFile", StringValue ("./scratch/videoStreamer/frameList.txt"));
-    // videoServer.SetAttribute ("FrameSize", UintegerValue (4096));
 
     ApplicationContainer serverApp = videoServer.Install (nodes.Get (0));
     serverApp.Start (Seconds (0.0));
@@ -104,7 +84,6 @@ main (int argc, char *argv[])
     address.SetBase ("10.1.2.0", "255.255.255.0");
     address.Assign (d0d2);
 
-    //Ipv4InterfaceContainer interfaces = address.Assign (devices);
     Ipv4InterfaceContainer i0i1 = address.Assign (d0d1);
     Ipv4InterfaceContainer i0i2 = address.Assign (d0d2);
 
@@ -121,7 +100,6 @@ main (int argc, char *argv[])
     VideoStreamServerHelper videoServer (5000);
     videoServer.SetAttribute ("MaxPacketSize", UintegerValue (1400));
     videoServer.SetAttribute ("FrameFile", StringValue ("./scratch/videoStreamer/small.txt"));
-    // videoServer.SetAttribute ("FrameSize", UintegerValue (4096));
 
     ApplicationContainer serverApp = videoServer.Install (nodes.Get (0));
     serverApp.Start (Seconds (0.0));
@@ -173,7 +151,6 @@ main (int argc, char *argv[])
                                  "LayoutType", StringValue ("RowFirst"));
  
     
-    //mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel", "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50))); 
     mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");   
     mobility.Install (wifiStaNodes);
    
@@ -193,10 +170,7 @@ main (int argc, char *argv[])
     Ipv4InterfaceContainer wifiInterfaces;
     wifiInterfaces=address.Assign (staDevices);
                   
-    //UdpEchoServerHelper echoServer (9);
     VideoStreamServerHelper videoServer (5000);
-    //videoServer.SetAttribute ("MaxPacketSize", UintegerValue (1400));
-    //videoServer.SetAttribute ("FrameFile", StringValue ("./scratch/videoStreamer/small.txt"));
     for(uint m=0; m<nAp; m++)
     {
       ApplicationContainer serverApps = videoServer.Install (wifiApNode.Get (m));
@@ -214,8 +188,6 @@ main (int argc, char *argv[])
     }
   
     Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
-  
-    //Simulator::Stop (Seconds (10.0));
   
     phy.EnablePcap ("wifi-videoStream", apDevices.Get (0));
     AnimationInterface anim("wifi-1-3.xml");
@@ -263,10 +235,7 @@ main (int argc, char *argv[])
   
     mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");  
     mobility.Install (wifiApNode);
-      
-    //mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",   
-    //                           "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));   
-    //mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");  
+
     mobility.Install (wifiStaNodes);
   
     InternetStackHelper stack;
@@ -281,8 +250,7 @@ main (int argc, char *argv[])
     apInterfaces = address.Assign (apDevices); 
     Ipv4InterfaceContainer wifiInterfaces;
     wifiInterfaces=address.Assign (staDevices);
-                  
-    //UdpEchoServerHelper echoServer (9);
+
     VideoStreamServerHelper videoServer (5000);
     videoServer.SetAttribute ("MaxPacketSize", UintegerValue (1400));
     videoServer.SetAttribute ("FrameFile", StringValue ("./scratch/videoStreamer/small.txt"));
