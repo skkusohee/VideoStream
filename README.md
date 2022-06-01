@@ -23,17 +23,30 @@ ns-3 (version 3.30), Python (`python 2.7+` or `python 3.5+`), C++ compiler (`cla
 1. Type the following commands 
 
 `awk '$1=="0" {print $2 "\t" $3}' stream.dat > buffer.dat`
+
 `awk '$1=="1" {print $2 "\t" $3}' stream.dat > playtime.dat`
+
 `awk '$1=="2" {print $2 "\t" $3}' stream.dat > videolevel.dat`
+
 `gnuplot`
+
 `set term png`
+
 `set output "stream.png"`
+
 `set y2tics`
+
 `set tics nomirror`
+
 `set y2range [0:5]`
+
 `plot "buffer.dat" using 1:2 title "BufferCount" with linespoints, "playtime.dat" using 1:2 title "PlayTime" with linespoints, "videolevel.dat" using 1:2 axes x1y2 title "ResolutionLevel" with linespoints`
 
 2. Quit gnuplot and check `stream.png` file.
+
+
+### Detailed explanation
+This video streaming program start with high video resolution. It automatically modify the video quality according to the current buffering. If you want to get more detailed information, check the `Results` section right down below.
 
 ## Results
 
@@ -45,34 +58,56 @@ ns-3 (version 3.30), Python (`python 2.7+` or `python 3.5+`), C++ compiler (`cla
 - (2) Wireless network with 1 server and 1 client
 
  
-### Simulation
+### Case of requesting video with speed x1
 
+Set a `m_videoSpeed` in `video-stream-client.cc`, and you are expected to get the graph like this.
 
-#### 실험 세팅
+![](./attachments/Result/stream_p2p_1.png)
+![](./attachments/Result/stream_wifi_1.png)
+- (1) P2P Link
+- (2) WiFi Link
 
-##### 1. Application
+### Case of requesting video with speed x1.2
 
-동영상 길이는 총 300 frame  
-1초당 5 frame 영상을 송출한다고 가정  
-사용자가 특정 배속으로 동영상을 요청하면 1초당 frame 수가 배속에 비례하여 증가  
+Set a `m_videoSpeed` in `video-stream-client.cc`, and you are expected to get the graph like this.
 
-1 frame당 해상도(resolution) level  
+![](./attachments/Result/stream_p2p_1.2.png)
+![](./attachments/Result/stream_wifi_1.2.png)
+- (1) P2P Link
+- (2) WiFi Link
 
-Resolution Level 0 : 100001 bytes for 1 frame  
-Resolution Level 1 = 150001 bytes for 1 frame  
-Resolution Level 2 = 200001 bytes for 1 frame  
-Resolution Level 3 = 230001 bytes for 1 frame  
-Resolution Level 4 = 250001 bytes for 1 frame  
-Resolution Level 5 = 300001 bytes for 1 frame  
+### Case of requesting video with speed x1.4
 
+Set a `m_videoSpeed` in `video-stream-client.cc`, and you are expected to get the graph like this.
 
-초기에 resolution level 5 로 동영상을 전송  
-버퍼링이 1초 이상 지속되면 resolution level을 조절해 버퍼링을 1초 이하로 줄임.  
-버퍼에 충분한 frame이 존재하면 다시 resolution level을 증가.  
+![](./attachments/Result/stream_p2p_1.4.png)
+![](./attachments/Result/stream_wifi_1.4.png)
+- (1) P2P Link
+- (2) WiFi Link
 
+### Case of requesting video with speed x1.6
 
-##### 2. Topology
+Set a `m_videoSpeed` in `video-stream-client.cc`, and you are expected to get the graph like this.
 
-1. 1:1 P2P Link
-2. 1:1 WiFi Link
+![](./attachments/Result/stream_p2p_1.6.png)
+![](./attachments/Result/stream_wifi_1.6.png)
+- (1) P2P Link
+- (2) WiFi Link
 
+### Case of requesting video with speed x1.8
+
+Set a `m_videoSpeed` in `video-stream-client.cc`, and you are expected to get the graph like this.
+
+![](./attachments/Result/stream_p2p_1.8.png)
+![](./attachments/Result/stream_wifi_1.8.png)
+- (1) P2P Link
+- (2) WiFi Link
+
+### Case of requesting video with speed x2
+
+Set a `m_videoSpeed` in `video-stream-client.cc`, and you are expected to get the graph like this.
+
+![](./attachments/Result/stream_p2p_2.png)
+![](./attachments/Result/stream_wifi_2.png)
+- (1) P2P Link
+- (2) WiFi Link
