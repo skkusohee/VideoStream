@@ -25,6 +25,13 @@ ns-3 (version 3.30), Python (`python 2.7+` or `python 3.5+`), C++ compiler (`cla
 3. Run `./waf` or `./waf build` to build the new application.
 4. Run `./waf --run videoStreamer 2> stream.dat` for the testing program and make output data file(you can change `CASE` in `videoStreamTest.cc` for different network environments).
 
+### How to change the case
+During speed control, buffering occurs when the speed increases too much, so it is implemented to automatically improve resolution.
+The following two variable values can be adjusted to execute them at the desired speed and resolution. The supported resolution is classified into six levels.
+
+- m_videoSpeed : Variable that determines the speed level
+- m_videoLevel : Variable that determines the resolution level
+
 ### How to make graph
 1. Type the following commands 
 
