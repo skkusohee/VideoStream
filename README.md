@@ -1,5 +1,15 @@
 # Video Speed Controller Service using NS-3
 
+## Introduction
+
+This project was conducted for the network project team project for the first semester of 2022 at Sungkyunkwan University.
+Based on the ns-3 and network models learned in class, a "speed controlled streaming service" was implemented.
+Team member is Kang Seung Mok, Yoon So Hee, Lee In Su, Lee Hyun Jeong, Cha Jeong Min and Choi Jae Ik.
+We divided it into a development team and a simulation team.
+
+- Team Development : Kang Seung Mok, Yoon So Hee, Lee Hyun Jeong, Choi Jae Ik
+- Team Simulation : Lee In Su, Cha Jeong Min
+
 ## Model
 
 ### Streaming Server
@@ -26,17 +36,6 @@ Interpreting data read from client and decide which order and how many packets t
 - Consume the frames that have been received and organized, and request video to the server
     - rebufferCounter initialization or increment
     - Request next packet to server
-
-
-## Introduction
-
-This project was conducted for the network project team project for the first semester of 2022 at Sungkyunkwan University.
-Based on the ns-3 and network models learned in class, a "speed controlled streaming service" was implemented.
-Team member is Kang Seung Mok, Yoon So Hee, Lee In Su, Lee Hyun Jeong, Cha Jeong Min and Choi Jae Ik.
-We divided it into a development team and a simulation team.
-
-- Team Development : Kang Seung Mok, Yoon So Hee, Lee Hyun Jeong, Choi Jae Ik
-- Team Simulation : Lee In Su, Cha Jeong Min
 
 ## Installation
 
