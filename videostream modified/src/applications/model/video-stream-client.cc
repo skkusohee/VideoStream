@@ -47,13 +47,14 @@ namespace ns3
     m_frameSize = 0;
     //m_resolution = 76800; // 글로벌 변수 RESOLUTION과 같은값 넣어주세요
     m_frameRate = 5;
-    m_videoSpeed = 2;     // 이거 골라서 넣으세용 디폴트 1배속
+    m_videoSpeed = 1.8;     // 이거 골라서 넣으세용 디폴트 1배속
     m_stopCounter = 0;
     m_lastRecvFrame = 0;
     m_rebufferCounter = 0;
     m_videotime = 0;
     m_bufferEvent = EventId();
     m_sendEvent = EventId();
+    m_speedxframeRate = m_frameRate*m_videoSpeed;
     //!!!
     //2배속인 경우에, 1초에 40 프레임을 확보 해야 함. --> 최소값이 40프레임 이면 괜찮을 것. 
     //1배속인 경우에 1초에 20프레임 확보 해야 함. -> 최대값이 20프레임 
@@ -191,7 +192,7 @@ namespace ns3
     NS_ASSERT(m_sendEvent.IsExpired());
 
     uint8_t send_Buffer[MAX_PACKET_SIZE];
-    sprintf((char *)send_Buffer, "res:%u lrf:%u fr:%u", m_resolution, m_lastRecvFrame, m_frameRate * m_videoSpeed);
+    sprintf((char *)send_Buffer, "res:%u lrf:%u fr:%u", m_resolution, m_lastRecvFrame, m_speedxframeRate);
 
     //TEST~
     uint32_t RES;
@@ -236,7 +237,7 @@ namespace ns3
     printf("확보중인 프레임 : %d, 버퍼링 횟수 : %d\n", m_currentBufferSize, m_rebufferCounter);
 
     // 소비할 수 없는만큼 버퍼에 영상의 프레임이 남아있는 경우
-    if(m_currentBufferSize < m_frameRate * m_videoSpeed){
+    if(m_currentBufferSize < m_speedxframeRate){
       // 마지막 수신한 프레임이 끝 프레임이 아니라면 즉 영상을 아직 받아야 하는 상태라면
       if(m_lastRecvFrame < TOTAL_VIDEO_FRAME){
         // 버퍼링 케이스에 해당합니다. 
@@ -245,7 +246,7 @@ namespace ns3
           // 패킷에 수신하고자 하는 화질, 몇번째 프레임부터 서버에서 송신해주면 되는지, 초당 몇개의 프레임을 소비하는지 의 데이터를 담아서 서버로 요청을 넣습니다.
           // 서버쪽에서는 요청을 받으면 몇번째 프레임부터 client가 받고싶어하는지 에서부터 앞으로 5초간의 영상(초당 몇개 프레임 소비하는지 * 5) 만큼의 영상을 보내주게 됩니다.
           uint8_t send_Buffer[MAX_PACKET_SIZE];
-          sprintf((char *)send_Buffer, "res:%u lrf:%u fr:%u", m_resolution, m_lastRecvFrame, m_frameRate * m_videoSpeed);
+          sprintf((char *)send_Buffer, "res:%u lrf:%u fr:%u", m_resolution, m_lastRecvFrame, m_speedxframeRate);
           Ptr<Packet> firstPacket = Create<Packet>(send_Buffer, MAX_PACKET_SIZE);
           m_socket->Send(firstPacket);
         }
@@ -283,8 +284,8 @@ namespace ns3
     } else {
       // 1초어치 영상을 소비합니다.
       m_videotime += 1;
-      printf("                                               영상 소비 %d\n", m_frameRate * m_videoSpeed);
-      m_currentBufferSize -= m_frameRate * m_videoSpeed;
+      printf("                                               영상 소비 %d\n", m_speedxframeRate);
+      m_currentBufferSize -= m_speedxframeRate;
       // 영상이 최근 재생되었으므로 버퍼링 횟수도 초기화 합니다.
       m_rebufferCounter = 0;
       // 마지막 수신한 프레임이 끝 프레임이 아니라면 즉 영상을 아직 받아야 하는 상태라면
@@ -292,13 +293,13 @@ namespace ns3
         // 패킷에 수신하고자 하는 화질, 몇번째 프레임부터 서버에서 송신해주면 되는지, 초당 몇개의 프레임을 소비하는지 의 데이터를 담아서 서버로 요청을 넣습니다.
         // 서버쪽에서는 요청을 받으면 몇번째 프레임부터 client가 받고싶어하는지 에서부터 앞으로 5초간의 영상(초당 몇개 프레임 소비하는지 * 5) 만큼의 영상을 보내주게 됩니다.
         uint8_t send_Buffer[MAX_PACKET_SIZE];
-        sprintf((char *)send_Buffer, "res:%u lrf:%u fr:%u", m_resolution, m_lastRecvFrame, m_frameRate * m_videoSpeed);
+        sprintf((char *)send_Buffer, "res:%u lrf:%u fr:%u", m_resolution, m_lastRecvFrame, m_speedxframeRate);
         Ptr<Packet> firstPacket = Create<Packet>(send_Buffer, MAX_PACKET_SIZE);
         m_socket->Send(firstPacket);
       }
 
 /////
- else if(m_currentBufferSize >= m_frameRate*m_videoSpeed){
+      if(m_currentBufferSize >= m_speedxframeRate){
           if(m_videoLevel<5){
 
             m_videoLevel++;
