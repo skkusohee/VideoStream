@@ -9,7 +9,9 @@ This project was conducted for the network project team project for the first se
 Based on the ns-3 and network models learned in class, a "speed controlled streaming service" was implemented.
 Team member is Kang Seung Mok, Yoon So Hee, Lee In Su, Lee Hyun Jeong, Cha Jeong Min and Choi Jae Ik.
 We divided it into a development team and a simulation team.
+
 Team Development : Kang Seung Mok, Yoon So Hee, Lee Hyun Jeong, Choi Jae Ik
+
 Team Simulation : Lee In Su, Cha Jeong Min
 
 ## Installation
