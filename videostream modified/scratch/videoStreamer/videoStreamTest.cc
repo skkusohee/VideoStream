@@ -134,7 +134,7 @@ main (int argc, char *argv[])
   }
   else if (CASE == 3)
   {
-    const uint32_t nWifi = 3, nAp = 1;
+    const uint32_t nWifi = 1, nAp = 1;
     NodeContainer wifiStaNodes;
     wifiStaNodes.Create (nWifi);  
     NodeContainer wifiApNode;
@@ -173,7 +173,8 @@ main (int argc, char *argv[])
                                  "LayoutType", StringValue ("RowFirst"));
  
     
-    mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel", "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));   
+    //mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel", "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50))); 
+    mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");   
     mobility.Install (wifiStaNodes);
    
     mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");  
@@ -194,8 +195,8 @@ main (int argc, char *argv[])
                   
     //UdpEchoServerHelper echoServer (9);
     VideoStreamServerHelper videoServer (5000);
-    videoServer.SetAttribute ("MaxPacketSize", UintegerValue (1400));
-    videoServer.SetAttribute ("FrameFile", StringValue ("./scratch/videoStreamer/small.txt"));
+    //videoServer.SetAttribute ("MaxPacketSize", UintegerValue (1400));
+    //videoServer.SetAttribute ("FrameFile", StringValue ("./scratch/videoStreamer/small.txt"));
     for(uint m=0; m<nAp; m++)
     {
       ApplicationContainer serverApps = videoServer.Install (wifiApNode.Get (m));
@@ -214,7 +215,7 @@ main (int argc, char *argv[])
   
     Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   
-    Simulator::Stop (Seconds (10.0));
+    //Simulator::Stop (Seconds (10.0));
   
     phy.EnablePcap ("wifi-videoStream", apDevices.Get (0));
     AnimationInterface anim("wifi-1-3.xml");
