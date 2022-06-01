@@ -14,7 +14,7 @@
 #include <unordered_map>
 
 #define MAX_PACKET_SIZE 30000      // Client 쪽이랑 맞춰주세용
-#define TOTAL_VIDEO_FRAME 100  // Client 쪽이랑 맞춰주세용
+#define TOTAL_VIDEO_FRAME 300  // Client 쪽이랑 맞춰주세용
 
 namespace ns3 {
 
