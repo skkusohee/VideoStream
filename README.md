@@ -2,8 +2,6 @@
 
 ## Model
 
----
-
 ### Streaming Server
 
 Interpreting data read from client and decide which order and how many packets to send
