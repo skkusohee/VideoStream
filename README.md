@@ -159,3 +159,7 @@ Set a `m_videoSpeed` in `video-stream-client.cc`, and you are expected to get th
 ![](./attachments/Result/stream_wifi_2.png)
 - (1) P2P Link
 - (2) WiFi Link
+
+## Reference
+1. The ns-3 development team, “ns-3 network simulator.” https://www.nsnam.org/docs/release/3.32/tutorial/html/ introduction.html. Accessed: 2020-11-28.
+2. guoxiliu. “VideoStream-NS3.” Github, Guoxiliu (Ed.). (n.d.). VideoStream-NS3. Retrieved from https://github.com/guoxiliu/VideoStream-NS3.git.
