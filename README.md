@@ -67,6 +67,13 @@ Set a `m_videoSpeed` in `video-stream-client.cc`, and you are expected to get th
 - (1) P2P Link
 - (2) WiFi Link
 
+The left axis of the graph is video playtime. Since the video is 300 frames and the program takes 5 frames per second, we can see the total playtime is around 60 seconds.
+
+The right axis of the graph is resolution level. There are 6 resolution levels(0 to 5) and always start from level 5.
+
+The buffer count is a buffering counter to reproduce the image, but it may be seen that it does not exceed 1 second or more.
+
+
 ### Case of requesting video with speed x1.2
 
 Set a `m_videoSpeed` in `video-stream-client.cc`, and you are expected to get the graph like this.
