@@ -1,6 +1,33 @@
-# (TITLE) VideoStream - Team 8
+# Video Speed Controller Service using NS-3
 
+## Model
 
+---
+
+### Streaming Server
+
+Interpreting data read from client and decide which order and how many packets to send
+
+- Register new client for first request from client
+- If the client receives the image to the end
+    - Stop transmitting
+- If the client doesn’t receive the image to the end
+    - Transmit frames in smaller packets
+    - Send with the number of packets in the frame
+    
+
+### Streaming Client
+
+- Request to the server with data
+    - the quality of the video want to receive (resolution)
+    - how many frames want to send from the server (lastRecvFrame)
+    - how many frames consume per second (speedxframeRate)
+- Receives frame fragments through the packet and adjusts the frame
+    - Modifying Information of frames that received stably
+    - Increase the buffer size of the frame
+- Consume the frames that have been received and organized, and request video to the server
+    - rebufferCounter initialization or increment
+    - Request next packet to server
 
 
 ## Introduction
